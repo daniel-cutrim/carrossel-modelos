@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .carousel-container {
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .carousel-wrapper {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .carousel-slide {
+            min-width: 100%;
+            position: relative;
+        }
+
+        .carousel-slide img {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .carousel-title {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            color: white;
+            padding: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            font-family: Arial, sans-serif;
+        }
+
+        .carousel-buttons {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 10px;
+        }
+
+        .carousel-btn {
+            background: rgba(255,255,255,0.9);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .carousel-btn:hover {
+            background: white;
+            transform: scale(1.1);
+        }
+
+        .carousel-dots {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dot.active {
+            background: white;
+            width: 24px;
+            border-radius: 5px;
+        }
+
+        @media (max-width: 600px) {
+            .carousel-slide img {
+                height: 300px;
+            }
+            
+            .carousel-title {
+                font-size: 18px;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="carousel-container">
+        <div class="carousel-wrapper" id="carouselWrapper">
+            <!-- Slide 1 -->
+            <div class="carousel-slide">
+                <img src="https://s3.manager01.insiderhub.com.br/typebot/public/workspaces/cm5zsnww90001jn9qjigsora4/typebots/cmi407lag0004xabkmer31j12/blocks/owpc2onlgqt9aftaz5nxum0h/items/gpmndyi0nl0qwav9z7c5yjjb?v=1764090721082" alt="Modelo 1">
+                <div class="carousel-title">Modelo 1</div>
+            </div>
+            
+            <!-- Slide 2 -->
+            <div class="carousel-slide">
+                <img src="https://s3.manager01.insiderhub.com.br/typebot/public/workspaces/cm5zsnww90001jn9qjigsora4/typebots/cmi407lag0004xabkmer31j12/blocks/owpc2onlgqt9aftaz5nxum0h/items/axkvm6ehi1171v2r6jkp21p0?v=1764090812905" alt="Modelo 2">
+                <div class="carousel-title">Modelo 2</div>
+            </div>
+            
+            <!-- Slide 3 -->
+            <div class="carousel-slide">
+                <img src="https://s3.manager01.insiderhub.com.br/typebot/public/workspaces/cm5zsnww90001jn9qjigsora4/typebots/cmi407lag0004xabkmer31j12/blocks/owpc2onlgqt9aftaz5nxum0h/items/okwybh5jxyg4c69fxady2xqz?v=1764090824253" alt="Modelo 3">
+                <div class="carousel-title">Modelo 3</div>
+            </div>
+            
+            <!-- Slide 4 -->
+            <div class="carousel-slide">
+                <img src="https://s3.manager01.insiderhub.com.br/typebot/public/workspaces/cm5zsnww90001jn9qjigsora4/typebots/cmi407lag0004xabkmer31j12/blocks/owpc2onlgqt9aftaz5nxum0h/items/hlld79hm3kt4ebtwo81xmrg6?v=1764090835173" alt="Modelo 4">
+                <div class="carousel-title">Modelo 4</div>
+            </div>
+        </div>
+
+        <!-- Botões de navegação -->
+        <div class="carousel-buttons">
+            <button class="carousel-btn" onclick="previousSlide()">❮</button>
+            <button class="carousel-btn" onclick="nextSlide()">❯</button>
+        </div>
+
+        <!-- Indicadores (dots) -->
+        <div class="carousel-dots" id="dotsContainer"></div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const wrapper = document.getElementById('carouselWrapper');
+        const slides = document.querySelectorAll('.carousel-slide');
+        const totalSlides = slides.length;
+        const dotsContainer = document.getElementById('dotsContainer');
+
+        // Criar dots
+        for (let i = 0; i < totalSlides; i++) {
+            const dot = document.createElement('div');
+            dot.className = 'dot';
+            if (i === 0) dot.classList.add('active');
+            dot.onclick = () => goToSlide(i);
+            dotsContainer.appendChild(dot);
+        }
+
+        function updateSlide() {
+            wrapper.style.transform = `translateX(-${currentSlide * 100}%)`;
+            
+            // Atualizar dots
+            document.querySelectorAll('.dot').forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentSlide);
+            });
+        }
+
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % totalSlides;
+            updateSlide();
+        }
+
+        function previousSlide() {
+            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+            updateSlide();
+        }
+
+        function goToSlide(index) {
+            currentSlide = index;
+            updateSlide();
+        }
+
+        // Auto-play (opcional - descomente se quiser)
+        // setInterval(nextSlide, 3000);
+    </script>
+</body>
+</html>
